@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+langchain
+langchain-google-genai
+pypdf
+faiss-cpu
+sentence-transformers
+openai-whisper
+python-dotenv

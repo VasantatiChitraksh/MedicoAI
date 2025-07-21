@@ -1,0 +1,94 @@
+# ---------------------
+# Python / Backend
+# ---------------------
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyo
+*.pyd
+*.pdb
+*.pyc
+*.manifest
+*.spec
+
+# Virtual Environment
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyInstaller
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Logs
+*.log
+*.log.*
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# ---------------------
+# Node / Frontend
+# ---------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production build
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/.nuxt/
+
+# Environment
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.env.development
+frontend/.env.test
+
+# Misc
+frontend/.eslintcache
+frontend/package-lock.json
+frontend/yarn.lock
+
+# ---------------------
+# General
+# ---------------------
+*.swp
+*.bak
+*.tmp
+*.orig
+*.old
+*.rej
+
+backend/data/
