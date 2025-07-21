@@ -92,3 +92,5 @@ frontend/yarn.lock
 *.rej
 
 backend/data/
+# Vectorstore database
+backend/vectorstore/

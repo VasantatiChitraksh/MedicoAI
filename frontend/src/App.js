@@ -20,7 +20,7 @@ function App() {
     try {
       const formData = new FormData();
       formData.append('query', userMessage);
-      const response = await axios.post('http://localhost:8000/api/query', formData);
+      const response = await axios.post('http://127.0.0.1:8000/api/query', formData);
       const botMessage = response.data.answer || "Sorry, I couldn't get an answer.";
       setMessages(prev => [...prev, { sender: 'bot', text: botMessage }]);
       speak(botMessage);
@@ -58,7 +58,7 @@ function App() {
       formData.append('audio_file', audioBlob, 'recording.webm');
 
       try {
-        const response = await axios.post('http://localhost:8000/api/transcribe', formData);
+        const response = await axios.post('http://127.0.0.1:8000/api/transcribe', formData);
         const transcribedText = response.data.transcription;
         if (transcribedText) {
           handleSend(transcribedText);

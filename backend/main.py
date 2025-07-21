@@ -1,12 +1,13 @@
 import os
+import uvicorn
 import whisper
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_google_genai import GoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains.retrieval_qa.base import RetrievalQA
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 
 # Load environment variables (for GOOGLE_API_KEY)
@@ -24,8 +25,8 @@ db = FAISS.load_local("vectorstore/db_faiss", embeddings,
                       allow_dangerous_deserialization=True)
 
 # Gemini LLM for Generation
-llm = GoogleGenerativeAI(
-    model="gemini-pro", google_api_key=os.getenv("GOOGLE_API_KEY"))
+llm = GoogleGenerativeAI(model="gemini-2.0-flash",
+                         google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 # RAG Prompt Template
 prompt_template = """
@@ -73,7 +74,7 @@ def read_root():
 async def query_rag(query: str = Form(...)):
     """Receives a text query and returns the RAG model's answer."""
     try:
-        result = chain({"query": query})
+        result = chain.invoke({"query": query})
         return {"answer": result["result"]}
     except Exception as e:
         return {"error": str(e)}
