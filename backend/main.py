@@ -89,8 +89,11 @@ async def transcribe_audio(audio_file: UploadFile = File(...)):
             buffer.write(audio_file.file.read())
 
         # Transcribe the audio file
+        print("Transcribing audio file...")
         result = whisper_model.transcribe(audio_file.filename)
-        os.remove(audio_file.filename)  # Clean up the temp file
+        print("Transcription complete.")
+        os.remove(audio_file.filename)  
+        print(result)
 
         return {"transcription": result["text"]}
     except Exception as e:
