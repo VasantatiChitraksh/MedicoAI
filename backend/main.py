@@ -1,6 +1,8 @@
 import os
 import uvicorn
 import whisper
+import tempfile
+import shutil
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_google_genai import GoogleGenerativeAI
@@ -79,24 +81,39 @@ async def query_rag(query: str = Form(...)):
     except Exception as e:
         return {"error": str(e)}
 
-
 @app.post("/api/transcribe")
 async def transcribe_audio(audio_file: UploadFile = File(...)):
-    """Receives an audio file and returns the transcribed text."""
+    """
+    Receives an MP3 audio file, saves it temporarily, transcribes it using
+    Whisper, and then deletes the temporary file.
+    """
+    tmp_path = ""
     try:
-        # Save the uploaded file temporarily
-        with open(audio_file.filename, "wb") as buffer:
-            buffer.write(audio_file.file.read())
+        # Create a temporary file to securely save the upload.
+        # Using a `with` statement ensures it's properly handled.
+        # `delete=False` is important so we can get its path to pass to Whisper.
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
+            # Use shutil.copyfileobj for a memory-efficient way to save the file
+            shutil.copyfileobj(audio_file.file, tmp)
+            tmp_path = tmp.name
 
-        # Transcribe the audio file
-        print("Transcribing audio file...")
-        result = whisper_model.transcribe(audio_file.filename)
+        # Now that the file is saved, pass its path to the Whisper model.
+        # Note: Add `fp16=False` if you are running Whisper on a CPU.
+        print(f"Transcribing audio file: {tmp_path}")
+        result = whisper_model.transcribe(tmp_path)
         print("Transcription complete.")
-        os.remove(audio_file.filename)  
-        print(result)
-
+        
         return {"transcription": result["text"]}
+
     except Exception as e:
+        print(f"An error occurred: {e}")
         return {"error": str(e)}
 
-# To run the app: uvicorn main:app --reload
+    finally:
+        # This `finally` block ensures the temporary file is *always* cleaned up,
+        # even if an error occurs during transcription.
+        if tmp_path and os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        
+        # Ensure the uploaded file stream from the request is closed.
+        await audio_file.close()

@@ -1,98 +1,24 @@
-# === Python ===
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-*.pdb
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
-pip-wheel-metadata/
-*.manifest
-*.spec
+# Logs
+logs
 *.log
-
-# Virtual Environments
-venv/
-ENV/
-backend/.env*
-.venv/
-.python-version
-
-# Environment Variables
-.env
-.env.*
-
-# Jupyter & Colab
-.ipynb_checkpoints/
-*.ipynb
-
-# PyInstaller
-*.manifest
-*.spec
-
-# Coverage / Testing
-htmlcov/
-.coverage
-.tox/
-nosetests.xml
-pytest_cache/
-.cache/
-
-# === Node.js ===
-node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-lock.yaml
-package-lock.json
-.vscode/
+pnpm-debug.log*
+lerna-debug.log*
 
-# === Vector DBs & RAG ===
-# Common local DB folders (adjust depending on backend used)
-chroma/
-faiss_index/
-vectordb/
-*.db
-*.sqlite
-*.bin
-*.pkl
-*.npy
+node_modules
+dist
+dist-ssr
+*.local
 
-# Langchain-style output caches
-output/
-logs/
-cache/
-storage/
-
-# Milvus / Qdrant / Weaviate (local dev folders)
-milvus/
-qdrant/
-weaviate/
-db/
-
-# === OS / Editor Junk ===
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
-*.swp
-*.swo
-.idea/
-*.bak
-*.tmp
-*.~*
-
-# === Docker ===
-*.pid
-*.sock
-*.pid.lock
-docker-compose.override.yml
-
-# === Others ===
-*.tgz
-*.tar.gz
-*.zip
-*.log
-*.bak
-*.orig
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
