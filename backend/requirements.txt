@@ -1,10 +1,33 @@
+# === Core Server Framework ===
 fastapi
 uvicorn[standard]
+
+# === CORS Middleware ===
 python-multipart
+requests
+aiofiles
+python-dotenv
+
+# === Whisper for STT ===
+openai-whisper
+
+# === LangChain Core + Modules ===
 langchain
 langchain-google-genai
-pypdf
-faiss-cpu
+langchain-community
+langchain-huggingface
+
+# === Embeddings ===
 sentence-transformers
-openai-whisper
+
+# === Vector DB ===
+faiss-cpu
+
+# === PDF Loader ===
+PyMuPDF   # Needed for PyPDFLoader
+
+# === Environment ===
 python-dotenv
+
+# === Others ===
+tqdm
