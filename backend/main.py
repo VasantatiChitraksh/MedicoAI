@@ -1,7 +1,7 @@
 import os
+import time
 import uvicorn
 import whisper
-import tempfile
 import shutil
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,10 +15,12 @@ from dotenv import load_dotenv
 # Load environment variables (for GOOGLE_API_KEY)
 load_dotenv()
 
+UPLOAD_DIRECTORY = "audio_uploads"
+os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 # --- Initialize Models and Services ---
 print("Loading models and services...")
 # Whisper Model for STT
-whisper_model = whisper.load_model("tiny")
+whisper_model = whisper.load_model("base")
 
 # Embeddings and Vector Store for RAG
 embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2',
@@ -60,7 +62,7 @@ app = FastAPI()
 # CORS Middleware to allow requests from the React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,37 +85,25 @@ async def query_rag(query: str = Form(...)):
 
 @app.post("/api/transcribe")
 async def transcribe_audio(audio_file: UploadFile = File(...)):
-    """
-    Receives an MP3 audio file, saves it temporarily, transcribes it using
-    Whisper, and then deletes the temporary file.
-    """
-    tmp_path = ""
-    try:
-        # Create a temporary file to securely save the upload.
-        # Using a `with` statement ensures it's properly handled.
-        # `delete=False` is important so we can get its path to pass to Whisper.
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
-            # Use shutil.copyfileobj for a memory-efficient way to save the file
-            shutil.copyfileobj(audio_file.file, tmp)
-            tmp_path = tmp.name
+    # Create a unique filename using a timestamp to avoid overwrites
+    unique_filename = f"{int(time.time())}_{audio_file.filename}"
+    file_location = os.path.join(UPLOAD_DIRECTORY, unique_filename)
 
-        # Now that the file is saved, pass its path to the Whisper model.
-        # Note: Add `fp16=False` if you are running Whisper on a CPU.
-        print(f"Transcribing audio file: {tmp_path}")
-        result = whisper_model.transcribe(tmp_path)
-        print("Transcription complete.")
+    try:
+        # Save the uploaded file to the permanent directory
+        with open(file_location, "wb") as f:
+            shutil.copyfileobj(audio_file.file, f)
         
-        return {"transcription": result["text"]}
+        print(f"Audio permanently saved at: {file_location}")
+
+        # --- Transcription (No change here) ---
+        result = whisper_model.transcribe(file_location, fp16=False)
+        transcription = result["text"]
+        
+        print(f"Transcription: {transcription}")
+        return {"transcription": transcription}
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return {"error": str(e)}
-
-    finally:
-        # This `finally` block ensures the temporary file is *always* cleaned up,
-        # even if an error occurs during transcription.
-        if tmp_path and os.path.exists(tmp_path):
-            os.remove(tmp_path)
-        
-        # Ensure the uploaded file stream from the request is closed.
-        await audio_file.close()
+    
+    # NOTE: We no longer have a 'finally' block to delete the file
